@@ -180,7 +180,11 @@ circuit.swap(qreg_q[6], qreg_q[3])
 circuit.swap(qreg_q[6], qreg_q[5])
 circuit.swap(qreg_q[4], qreg_q[2])
 circuit.swap(qreg_q[4], qreg_q[1])
+#############################
 #//Check output q0 -> q7
+# if your output is 00100010
+# q0 is lsb, q7 is msb
+#############################
 circuit.x(qreg_q[0])
 # circuit.x(qreg_q[1])
 circuit.x(qreg_q[2])
