@@ -40,11 +40,6 @@ circuit.h(qreg_q[14])
 circuit.h(qreg_q[15])
 circuit.h(qreg_a[0])
 
-#//////////////
-#Round 1
-#//////////////
-
-
 #first Iterator
 #May need more iterator in oder to find the result, just copy from here until you see "Measurement" line
 # Add roundkey
