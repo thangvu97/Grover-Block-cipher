@@ -382,8 +382,8 @@ aersim = AerSimulator()
 result_ideal = aersim.run(circuit, shots = 10000000).result()
 counts_ideal = result_ideal.get_counts(0)
 #sorting the result
-# sorted_counts = dict(sorted(counts_ideal.items(), key=lambda item: -item[1])) 
-sorted_counts = dict(sorted(counts_ideal.items())) 
+sorted_counts = dict(sorted(counts_ideal.items(), key=lambda item: -item[1])) 
+#sorted_counts = dict(sorted(counts_ideal.items())) 
 
 print(sorted_counts)
 
