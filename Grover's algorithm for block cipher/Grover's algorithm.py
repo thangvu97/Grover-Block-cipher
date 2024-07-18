@@ -17,7 +17,8 @@ qreg_a = QuantumRegister(1, 'a')
 creg_c0 = ClassicalRegister(8, 'c0')
 circuit = QuantumCircuit(qreg_q, qreg_a, creg_c0)
 # # Input plain text q0 -> q7 
-
+## If your input is 11011011 then you it'll be like this
+## q7 is msb, q0 is lsb
 circuit.x(qreg_q[0])
 circuit.x(qreg_q[1])
 # circuit.x(qreg_q[2])
@@ -27,7 +28,7 @@ circuit.x(qreg_q[4])
 circuit.x(qreg_q[6])
 circuit.x(qreg_q[7])
 
-# Quantum superposition + Phase kickback
+# Quantum superposition
 circuit.x(qreg_a[0])
 circuit.h(qreg_q[8])
 circuit.h(qreg_q[9])
@@ -45,6 +46,7 @@ circuit.h(qreg_a[0])
 
 
 #first Iterator
+#May need more iterator in oder to find the result, just copy from here until you see "Measurement" line
 # Add roundkey
 circuit.cx(qreg_q[8], qreg_q[0])
 circuit.cx(qreg_q[9], qreg_q[1])
