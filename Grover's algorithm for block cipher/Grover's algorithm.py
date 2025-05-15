@@ -219,6 +219,49 @@ def rev_key_gen_linear(circuit, qreg_q, start_idx):
     circuit.swap(qreg_q[start_idx + 2], qreg_q[start_idx + 3])
     circuit.swap(qreg_q[start_idx], qreg_q[start_idx + 3])
 
+def test_encryption():
+    """Test encryption circuit with given plaintext and key"""
+    qreg_q = QuantumRegister(16, 'q')
+    creg_c = ClassicalRegister(8, 'c')
+    circuit = QuantumCircuit(qreg_q, creg_c)
+    
+    # Apply plaintext and key
+    plaintext = "11001100"
+    key = "11001001"
+    apply_input(circuit, qreg_q, plaintext)
+    apply_key(circuit, qreg_q, key)
+    
+    # Round 1
+    add_roundkey(circuit, qreg_q)
+    sbox_first_half(circuit, qreg_q)
+    sbox_second_half(circuit, qreg_q)
+    linear_layer(circuit, qreg_q)
+    
+    # Key schedule
+    key_gen_sbox(circuit, qreg_q, 8)
+    key_gen_linear(circuit, qreg_q, 8)
+    key_gen_sbox(circuit, qreg_q, 12)
+    key_gen_linear(circuit, qreg_q, 12)
+    
+    # Round 2
+    add_roundkey(circuit, qreg_q)
+    sbox_first_half(circuit, qreg_q)
+    sbox_second_half(circuit, qreg_q)
+    linear_layer(circuit, qreg_q)
+    
+    # Measure output (q0 LSB, q7 MSB)
+    for i in range(8):
+        circuit.measure(qreg_q[i], creg_c[i])
+    
+    # Simulate
+    aersim = AerSimulator()
+    result = aersim.run(circuit, shots=1).result()
+    counts = result.get_counts()
+    # Convert to q7 MSB, q0 LSB
+    for measured in counts:
+        corrected = measured[::-1]  # Reverse to match q7 MSB
+        print(f"Encryption test output (q7 MSB, q0 LSB): {corrected}")
+
 def main(plaintext , ciphertext, r:int):
     # Initialize registers and circuit
     qreg_q = QuantumRegister(16, 'q')
