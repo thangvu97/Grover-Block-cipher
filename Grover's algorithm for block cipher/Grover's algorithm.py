@@ -262,12 +262,13 @@ def test_encryption():
         corrected = measured[::-1]  # Reverse to match q7 MSB
         print(f"Encryption test output (q7 MSB, q0 LSB): {corrected}")
 
-def main(plaintext , ciphertext, r:int):
+def main(plaintext , ciphertext,N:int, M:int):
     # Initialize registers and circuit
     qreg_q = QuantumRegister(16, 'q')
     qreg_a = QuantumRegister(1, 'a')
     creg_c0 = ClassicalRegister(8, 'c0')
     circuit = QuantumCircuit(qreg_q, qreg_a, creg_c0)
+    r = int(math.pi/4*math.sqrt(N/M))
     
     # Apply initial operations
     apply_input(circuit, qreg_q, plaintext)
@@ -281,10 +282,10 @@ def main(plaintext , ciphertext, r:int):
     # Measurement (q8 LSB, q15 MSB)
     for i in range(8):
         circuit.measure(qreg_q[i + 8], creg_c0[i])
-    
+    num_shots=100000
     # Simulation
     aersim = AerSimulator()
-    result_ideal = aersim.run(circuit, shots=100000).result()
+    result_ideal = aersim.run(circuit, shots=num_shots).result()
     counts_ideal = result_ideal.get_counts(0)
     sorted_counts = dict(sorted(counts_ideal.items(), key=lambda item: -item[1]))
     
@@ -292,19 +293,17 @@ def main(plaintext , ciphertext, r:int):
     corrected_counts = {}
     for key in sorted_counts:
         corrected_counts[key] = sorted_counts[key]
-    
+
     print("Circuit operations:", dict(circuit.count_ops()))
     print("Circuit depth:", circuit.depth())
-    print("Measurement counts (q15 MSB, q8 LSB):", corrected_counts)
-    
+    for i in range(M):
+        print(f"Key {i}: {list(corrected_counts.keys())[i]} with probability approximate: {list(corrected_counts.values())[i] *100/ num_shots:.4f}")
     plot_histogram(corrected_counts, sort='value', title='Key Distribution (q15 MSB, q8 LSB)')
     plt.show()
 
 if __name__ == "__main__":
     N = 2**8
-    M = 1 # number of keys
-    plaintext = "11011011"
-    ciphertext = "00100010"
-    r = int(math.pi/4*math.sqrt(N/M))
-    print(r)
-    main(plaintext,ciphertext, r)
+    M = 2 # number of keys
+    plaintext = "11001100"
+    ciphertext = "01011010"
+    main(plaintext,ciphertext,N,M)
